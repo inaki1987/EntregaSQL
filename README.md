@@ -6,7 +6,14 @@ tablas y relaciones entre las mismas mostradas en la imagen:
   
 Se intenta un nombre algo más descriptivo, pero tengo problemas a la hora de importar la base de datos (para seguir las buenas prácticas)  
 Se obtiene el siguiente esquema de la base de datos.Se utiliza la herramiento Dbeaver tanto para importar la base de datos como para la realización de las querys  
-Con ello se da cumplimiento al ejercicio 1 de la entrega.  
+Con ello se da cumplimiento al ejercicio 1 de la entrega. 
+
+Durante la ejecución del ejercicio 4, descubrimos que original_language_id solo toma valores NULL, así como languag_id solo toma el valor 1.  
+ejecutamos adicionalemnte la query siguiente para comprobarlo:
+SELECT "title", "language_id", "original_language_id"
+FROM "film" ;  
+
+
 
 
 
