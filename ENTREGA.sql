@@ -18,7 +18,7 @@ AND "actor_id">= 30;
 
 SELECT "title"
 FROM "film"
-WHERE 'language_id'='original_laguage_id';
+WHERE "language_id"="original_language_id";
  --No existe ninguna pelicula con valor 'original_laguage_id', todos vienen informados con el valor NULL, de la misma manera todos los valores de 'language_id' son iguales a 1.
 SELECT "film_id", "title", "language_id", "original_language_id"
 FROM "film" ; 
@@ -32,7 +32,7 @@ ORDER BY "length" ASC;
 
 SELECT "first_name", "last_name"
 FROM "actor"
-WHERE "last_name"='ALLEN';
+WHERE "last_name" LIKE '%ALLEN%';
 
 -- EJERCICIO 7. Encuentra la cantidad total de películas en cada clasificación de la tabla “film” y muestra la clasificación junto con el recuento.
 SELECT "rating" ,count(*) AS"Quantity"
@@ -78,9 +78,9 @@ SELECT "title","length"
 FROM "film"
 WHERE "length">180;
 
--- EJERCICIO15. ¿Cuánto dinero ha generado en total la empresa?
+-- EJERCICIO 15. ¿Cuánto dinero ha generado en total la empresa?
 SELECT sum("amount")
-FROM "payment"
+FROM "payment";
 
 -- EJERCICIO16. Muestra los 10 clientes con mayor valor de id.
 SELECT "customer_id", "first_name", "last_name"
@@ -132,7 +132,7 @@ FROM "category" AS c
 INNER JOIN "film_category" AS fc ON c.category_id=fc.category_id
 INNER JOIN "film"AS f ON fc.film_id=f.film_id 
 GROUP BY c.name
-HAVING AVG("length") >'110';
+HAVING AVG("length") >110;
 
 
 --21. ¿Cuál es la media de duración del alquiler de las películas?
@@ -144,7 +144,7 @@ SELECT "first_name"||' '|| "last_name"
 FROM "actor";
 
 --23. Números de alquiler por día, ordenados por cantidad de alquiler de forma descendente.
-SELECT "rental_date", COUNT("rental_id") 
+SELECT DATE("rental_date"), COUNT("rental_id") 
 FROM "rental"
 GROUP BY "rental_date"
 ORDER BY count("rental_date") DESC ;
@@ -189,11 +189,17 @@ HAVING  count("actor_id")>40;
 --group by "actor_id";
 
 --29. Obtener todas las películas y, si están disponibles en el inventario, mostrar la cantidad disponible.
+--CORRECCION-- No muestra las peliculas con cantidad 0 en inventario
+--SELECT i.film_id, "title", count (i.film_id) AS "cantidad disponible"
+--FROM "inventory" AS i
+--INNER JOIN "film" AS f ON f.film_id=i.film_id
+--GROUP BY i.film_id, f.title
+--ORDER BY f.title ASC;
 
-SELECT i.film_id, "title", count (i.film_id) AS "cantidad disponible"
-FROM "inventory" AS i
-INNER JOIN "film" AS f ON f.film_id=i.film_id
-GROUP BY i.film_id, f.title
+SELECT  "title", count (i.film_id) AS "cantidad disponible"
+FROM "film" AS f
+LEFT JOIN "inventory" AS i ON i.film_id=f.film_id
+GROUP BY  f.title
 ORDER BY f.title ASC;
 
 --30. Obtener los actores y el número de películas en las que ha actuado.
@@ -206,7 +212,7 @@ GROUP BY fa.actor_id,a.first_name, a.last_name;
 SELECT f.title, a.FIRST_NAME ,a.LAST_NAME 
 FROM "film" AS f
 LEFT JOIN "film_actor" AS fa ON f.film_id=fa.FILM_ID
-INNER JOIN "actor"AS a ON fa.actor_id=a.actor_id
+LEFT JOIN "actor"AS a ON fa.actor_id=a.actor_id
 ORDER BY f.TITLE ;
 
 
@@ -214,7 +220,7 @@ ORDER BY f.TITLE ;
 SELECT  a.FIRST_NAME ,a.LAST_NAME,f.title
 FROM "actor" AS a
 LEFT JOIN "film_actor" AS fa ON a.actor_id=fa.actor_ID
-INNER JOIN "film" AS f ON fa.film_id=f.film_id
+LEFT JOIN "film" AS f ON fa.film_id=f.film_id
 ORDER BY a.FIRST_NAME ;
 
 --33. Obtener todas las películas que tenemos y todos los registros de alquiler.
@@ -222,8 +228,8 @@ ORDER BY a.FIRST_NAME ;
 SELECT f.title, r.rental_id, r.rental_date
 FROM "film" AS f
 LEFT JOIN "inventory" AS i ON f.film_id=i.FILM_ID 
-INNER JOIN "rental" AS r ON i.inventory_id=r.INVENTORY_ID 
-ORDER BY f.title, r.rental_date
+LEFT JOIN "rental" AS r ON i.inventory_id=r.INVENTORY_ID 
+ORDER BY f.title, r.rental_date;
 
 --34. Encuentra los 5 clientes que más dinero se hayan gastado con nosotros.
 SELECT "customer_id",sum ("amount")
@@ -244,16 +250,16 @@ WHERE "first_name"='JOHNNY';
 
 --37. Encuentra el ID del actor más bajo y más alto en la tabla actor.
 SELECT  Min("actor_id")AS "minima id",MAX("actor_id")AS "maxima id"
-FROM "actor"
+FROM "actor";
 
 --38. Cuenta cuántos actores hay en la tabla “actor”.
 SELECT count("actor_id")
-FROM actor
+FROM actor;
 
 --39. Selecciona todos los actores y ordénalos por apellido en orden ascendente.
 SELECT "first_name", "last_name"
 FROM actor
-ORDER BY "last_name","first_name" ASC
+ORDER BY "last_name","first_name" asc;
 
 --Dentro del apellido, ordenamos tambien por orden alfabetico de nombre
 
@@ -284,11 +290,11 @@ SELECT f.title, c.name
 FROM "film"AS f
 CROSS JOIN "category" AS c;
 
---Esta consulta no aprota valor, ya que la categoría es una característica intrinseca de la pelicula y estamos haciendo todas las posibles combinadciones entre el nombre de la pelicula (en este caso) con los diferentes tipos de pelicula que hay)
+--Esta consulta no aporta valor, ya que la categoría es una característica intrinseca de la pelicula y estamos haciendo todas las posibles combinadciones entre el nombre de la pelicula (en este caso) con los diferentes tipos de pelicula que hay)
 --El sentido que podría tener es realizar dos inner join, para que junto con la pelicula, a traves de la tabla intermedia "film_category", apareciera la clasificación de cada una de las películas. 
 
 --45. Encuentra los actores que han participado en películas de la categoría 'Action'.
-SELECT distinct(a.first_name), a.last_name
+SELECT DISTINCT a.first_name, a.last_name
 FROM "actor" AS a
 INNER JOIN "film_actor" AS fa ON a.actor_id=fa.ACTOR_ID 
 INNER JOIN "film" AS f ON fa.film_id=f.FILM_ID
@@ -300,10 +306,10 @@ ORDER BY a.first_name;
 --Se añade el distintc para eliminar duplicados
 
 --46. Encuentra todos los actores que no han participado en películas.
-SELECT a.actor_id,"first_name", "last_name"
+SELECT DISTINCT a.actor_id,"first_name", "last_name"
 FROM "actor" AS a
-LEFT JOIN "film_actor" AS fa ON a.actor_id=fa.actor_id;
-
+LEFT JOIN "film_actor" AS fa ON a.actor_id=fa.actor_id
+WHERE fa.actor_id=NULL;
 
 --47. Selecciona el nombre de los actores y la cantidad de películas en las que han participado.
 SELECT a.first_name, a.last_name, count(fa.actor_id)
@@ -373,7 +379,7 @@ ORDER BY f.title;
 
 
 --54. Encuentra los nombres de los actores que han actuado en al menos una película que pertenece a la categoría ‘Sci-Fi’. Ordena los resultados alfabéticamente por apellido.
-SELECT distinct(a.actor_id), a.FIRST_NAME ,a.LAST_NAME
+SELECT DISTINCT a.actor_id, a.FIRST_NAME ,a.LAST_NAME
 FROM "actor" AS a
 INNER JOIN "film_actor" AS fa ON a.actor_id=fa.actor_ID
 WHERE fa.actor_id IN(SELECT actor_id
@@ -388,7 +394,7 @@ ORDER BY a.last_name;
 
 
 --55. Encuentra el nombre y apellido de los actores que han actuado en películas que se alquilaron después de que la película ‘Spartacus Cheaper’ se alquilara por primera vez. Ordena los resultados alfabéticamente por apellido
-SELECT Distinct(a.actor_id),a.first_name, a.last_name
+SELECT DISTINCT a.actor_id,a.first_name, a.last_name
 FROM "actor" AS a
 INNER JOIN "film_actor" AS fa ON a.actor_id=fa.actor_id 
 INNER JOIN "film" AS f ON fa.FILM_ID =f.FILM_ID 
@@ -403,7 +409,7 @@ ORDER BY a.last_name;
 
 
 -- otra manera de resolver el 55
-SELECT Distinct(a.actor_id),a.first_name, a.last_name
+SELECT DISTINCT a.actor_id,a.first_name, a.last_name
 FROM "actor" AS a
 WHERE a.actor_id IN (SELECT fa.actor_id
 					FROM "film_actor" AS fa
@@ -419,9 +425,9 @@ ORDER BY a.last_name;
 
 --56. Encuentra el nombre y apellido de los actores que no han actuado en ninguna película de la categoría ‘Music’.
 
-SELECT distinct (a.actor_id), a.first_name, a.last_name
+SELECT DISTINCT a.actor_id, a.first_name, a.last_name
 FROM "actor" AS a
-WHERE actor_id NOT IN (SELECT distinct (a.actor_id)
+WHERE actor_id NOT IN (SELECT DISTINCT a.actor_id
 						FROM "actor" AS a
 						INNER JOIN "film_actor" AS fa ON a.actor_id=fa.ACTOR_ID 
 						INNER JOIN "film" AS f ON fa.film_id=f.film_id
@@ -431,14 +437,15 @@ WHERE actor_id NOT IN (SELECT distinct (a.actor_id)
 ORDER BY a.actor_id;
 
 --57. Encuentra el título de todas las películas que fueron alquiladas por más de 8 días.
-SELECT distinct(f.title)
+SELECT DISTINCT f.title
 FROM "film" AS f 
 INNER JOIN "film_category" AS fc ON fc.film_id=f.film_id 
 INNER JOIN "inventory"AS i ON f.film_id=i.film_id
 INNER JOIN "rental"AS r ON i.inventory_id=r.inventory_id
-GROUP BY f.title,r.return_date, r.rental_date
-HAVING (r.return_date::DATE-r.RENTAL_DATE::DATE)>8
-;
+--GROUP BY f.title,r.return_date, r.rental_date
+--HAVING (r.return_date::DATE-r.RENTAL_DATE::DATE)>8
+WHERE (r.return_date::DATE-r.RENTAL_DATE::DATE)>8;
+
 
 --58. Encuentra el título de todas las películas que son de la misma categoría que ‘Animation’.
 SELECT "title"
@@ -462,7 +469,8 @@ SELECT c.first_name,c.last_name, count(distinct(i.film_id))
 FROM "customer" AS c
 INNER JOIN "rental" AS r ON c.customer_id=r.customer_id
 LEFT JOIN "inventory"AS i ON r.inventory_id=i.inventory_id
-GROUP BY c.first_name, c.last_name
+--GROUP BY c.first_name, c.last_name
+GROUP BY c.customer_id 
 HAVING count(DISTINCT(i.film_id))>6
 ORDER BY c.first_name;
 
@@ -497,3 +505,6 @@ FROM "rental" AS r
 INNER JOIN "customer" AS c ON r.customer_id=c.customer_id
 GROUP BY c.customer_id
 ORDER BY count(r.rental_id) DESC;
+
+
+
