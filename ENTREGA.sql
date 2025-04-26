@@ -146,7 +146,7 @@ FROM "actor";
 --23. Números de alquiler por día, ordenados por cantidad de alquiler de forma descendente.
 SELECT DATE("rental_date"), COUNT("rental_id") 
 FROM "rental"
-GROUP BY "rental_date"
+GROUP BY DATE("rental_date")
 ORDER BY count("rental_date") DESC ;
 
 --24. Encuentra las películas con una duración superior al promedio.
@@ -309,7 +309,7 @@ ORDER BY a.first_name;
 SELECT DISTINCT a.actor_id,"first_name", "last_name"
 FROM "actor" AS a
 LEFT JOIN "film_actor" AS fa ON a.actor_id=fa.actor_id
-WHERE fa.actor_id=NULL;
+WHERE fa.actor_id IS NULL;
 
 --47. Selecciona el nombre de los actores y la cantidad de películas en las que han participado.
 SELECT a.first_name, a.last_name, count(fa.actor_id)
